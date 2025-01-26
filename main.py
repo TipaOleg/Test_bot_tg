@@ -1,18 +1,24 @@
 from aiogram import Bot, Dispatcher
-from aiogram.types import Message
+from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton
 from aiogram.filters import Command
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 import asyncio
 
-from pyexpat.errors import messages
 
 with open('Key', 'r') as file:
     API = file.read().strip()
 
 bot = Bot(token=API)
 dp = Dispatcher(storage=MemoryStorage())
+keyboard = ReplyKeyboardMarkup(
+    keyboard=[
+        [KeyboardButton(text='Рассчитать')],
+        [KeyboardButton(text='Информация')]
+    ],
+    resize_keyboard=True
+)
 
 class UserState(StatesGroup):
     age = State()
@@ -21,12 +27,17 @@ class UserState(StatesGroup):
 
 @dp.message(Command(commands=['start']))
 async def start(message: Message):
-    await message.answer('Привет! Я бот помогающий твоему здоровью.')
+    await message.answer('Привет! Я бот помогающий твоему здоровью. Выберите действие:', reply_markup=keyboard)
 
-@dp.message(Command(commands=['Calories']))
+@dp.message(lambda message: message.text == 'Рассчитать')
 async def set_age(message: Message, state: FSMContext):
     await message.answer('Ввудите свой возраст:')
     await state.set_state(UserState.age)
+
+# @dp.message(Command(commands=['Calories']))
+# async def set_age(message: Message, state: FSMContext):
+#     await message.answer('Ввудите свой возраст:')
+#     await state.set_state(UserState.age)
 
 @dp.message(UserState.age)
 async def set_growth(message: Message, state: FSMContext):
