@@ -31,9 +31,19 @@ users = [
 #     users
 # )
 
-cursor.execute("UPDATE Users SET balance = 500 WHERE id % 2 = 1")
+# cursor.execute("UPDATE Users SET balance = 500 WHERE id % 2 = 1")
+#
+# cursor.execute("DELETE FROM Users WHERE (id - 1) % 3 = 0")
 
-cursor.execute("DELETE FROM Users WHERE (id - 1) % 3 = 0")
+# cursor.execute("DELETE FROM Users WHERE id = 6")
+
+cursor.execute("SELECT COUNT(*) FROM Users")
+total_users = cursor.fetchone()[0]
+
+cursor.execute("SELECT SUM(balance) FROM Users")
+all_balances = cursor.fetchone()[0]
+
+print(all_balances / total_users)
 
 cursor.execute("SELECT username, email, age, balance FROM Users WHERE age != 60")
 res = cursor.fetchall()
